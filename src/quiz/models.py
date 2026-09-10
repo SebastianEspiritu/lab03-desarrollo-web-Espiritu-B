@@ -23,6 +23,15 @@ class Question(models.Model):
         verbose_name="Exam"
     )
     text = models.CharField(max_length=500, verbose_name="Question Text")
+    score = models.IntegerField(default=10, verbose_name="Score")  # Campo nuevo
+
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Question'
+        verbose_name_plural = 'Questions'
+
+    def __str__(self):
+        return f"{self.exam.title} - {self.text[:30]}"
 
     class Meta:
         ordering = ['id']
