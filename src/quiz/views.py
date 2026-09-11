@@ -1,3 +1,36 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Exam, Question
+from .forms import QuestionForm, ChoiceFormSet
 
-# Create your views here.
+
+def exam_list(request):
+    exams = Exam.objects.all()
+    return render(request, 'quiz/exam_list.html', {'exams': exams})
+
+
+def exam_detail(request, pk):
+    exam = get_object_or_404(Exam, pk=pk)
+    return render(request, 'quiz/exam_detail.html', {'exam': exam})
+
+
+def question_create(request, exam_id):
+    exam = get_object_or_404(Exam, pk=exam_id)
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        formset = ChoiceFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            question = form.save(commit=False)
+            question.exam = exam
+            question.save()
+            formset.instance = question
+            formset.save()
+            return redirect('exam_detail', pk=exam.pk)
+    else:
+        form = QuestionForm()
+        formset = ChoiceFormSet()
+
+    return render(request, 'quiz/question_form.html', {
+        'form': form,
+        'formset': formset,
+        'exam': exam
+    })

@@ -1,0 +1,33 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}{{ exam.title }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h2>{{ exam.title }}</h2>
+        <p class="lead">{{ exam.description }}</p>
+        <a href="{% url 'question_create' exam.id %}" class="btn btn-success">+ Add Question</a>
+        <a href="{% url 'exam_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<h3>Questions</h3>
+{% for question in exam.questions.all %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+            <strong>{{ question.text }}</strong>
+            <span class="badge bg-primary">Score: {{ question.score }}</span>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for choice in question.choices.all %}
+                <li class="list-group-item {% if choice.is_correct %}list-group-item-success{% endif %}">
+                    {{ choice.text }} {% if choice.is_correct %}(Correct){% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% empty %}
+    <p class="text-muted">No questions added yet.</p>
+{% endfor %}
+{% endblock %}
